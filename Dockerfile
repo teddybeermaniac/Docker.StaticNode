@@ -58,13 +58,13 @@ RUN "/build/node-v${NODE_VERSION}/configure" \
     make -j "$(nproc --all)" DESTDIR=/install install && \
     strip /install/bin/node
 
-FROM ghcr.io/teddybeermaniac/docker.scratchbase:v0.1.1
+FROM ghcr.io/teddybeermaniac/docker.scratchbase:v0.1.2
 
 COPY --from=node /install/bin/node /bin/node
-COPY --from=node /usr/share/icu /usr/share/icu
 
-COPY --from=base /bin/busybox.static /busybox
-RUN [ "/busybox", "find", "/usr/share/icu", "-mindepth", "2", "!", "-iname", "icudt*.dat", "-delete" ]
-RUN [ "/busybox", "rm", "/busybox" ]
+RUN --mount=from=base,source=/bin/busybox.static,target=/bin/busybox \
+    --mount=from=base,source=/bin/busybox.static,target=/bin/sh \
+    --mount=from=node,source=/usr/share/icu,target=/mnt/icu \
+    busybox find /mnt/icu -mindepth 2 -iname 'icudt*.dat' | while read FILE; do busybox install -D "${FILE}" "${FILE/\/mnt/\/usr\/share}"; done
 
 CMD [ "node", "/app/index.js" ]
