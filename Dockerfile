@@ -1,5 +1,4 @@
-#FROM alpine:3.18.4 AS base
-FROM alpine:edge AS base
+FROM alpine:3.19.0 AS base
 
 RUN apk add --no-cache \
     build-base \
@@ -27,7 +26,7 @@ RUN apk add --no-cache \
     zlib-dev \
     zlib-static
 
-ARG NODE_VERSION=20.9.0
+ARG NODE_VERSION=20.10.0
 
 WORKDIR /build
 RUN wget -O "/build/node-v${NODE_VERSION}.tar.xz" "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}.tar.xz" && \
@@ -58,7 +57,7 @@ RUN "/build/node-v${NODE_VERSION}/configure" \
     make -j "$(nproc --all)" DESTDIR=/install install && \
     strip /install/bin/node
 
-FROM ghcr.io/teddybeermaniac/docker.scratchbase:v0.1.2
+FROM ghcr.io/teddybeermaniac/docker.scratchbase:v0.1.3
 
 COPY --from=node /install/bin/node /bin/node
 
