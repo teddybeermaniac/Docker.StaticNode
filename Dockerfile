@@ -57,7 +57,7 @@ RUN "/build/node-v${NODE_VERSION}/configure" \
     make -j "$(nproc --all)" DESTDIR=/install install && \
     strip /install/bin/node
 
-FROM ghcr.io/teddybeermaniac/docker.scratchbase:v0.1.3
+FROM ghcr.io/teddybeermaniac/docker.scratchbase:v0.1.4
 
 COPY --from=node /install/bin/node /bin/node
 
